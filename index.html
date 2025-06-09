@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Raccolta Nomi</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: 3em auto;
+      text-align: center;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      margin-top: 1em;
+      font-size: 1em;
+    }
+    input[type="text"] {
+      width: 100%;
+      font-size: 1em;
+      padding: 0.5em;
+    }
+    button {
+      margin-top: 1em;
+      padding: 0.5em 1em;
+      font-size: 1em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Inserisci il tuo nome</h1>
+  <input type="text" id="inputName" placeholder="Scrivi qui il tuo nome..." />
+  <br/>
+  <button onclick="aggiungiNome()">Aggiungi</button>
+  <br/>
+  <textarea id="outputBox" readonly></textarea>
+
+  <script>
+    const endpoint = "https://script.google.com/macros/s/AKfycbxlaJJe6aUFho2_BJI39wtXiOHkwJhnTK62FsaBt8r80hq6Tx6Z2Rmzjhtbp21RA45V8Q/exec";
+
+    async function aggiornaLista() {
+      const res = await fetch(endpoint);
+      const nomi = await res.json();
+      document.getElementById("outputBox").value = nomi.join("\n");
+    }
+
+    async function aggiungiNome() {
+      const nome = document.getElementById("inputName").value.trim();
+      if (!nome) return;
+
+      await fetch(endpoint + "?nome=" + encodeURIComponent(nome), { method: "POST" });
+      document.getElementById("inputName").value = "";
+      aggiornaLista();
+    }
+
+    aggiornaLista();
+    setInterval(aggiornaLista, 30000); // aggiorna ogni 30 secondi
+  </script>
+</body>
+</html>
